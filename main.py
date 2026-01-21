@@ -3,7 +3,6 @@
 Yui - AI Companion Core System
 Phase 1: Basic Conversation Engine
 """
-
 import sys
 from rich.console import Console
 from rich.panel import Panel
@@ -13,6 +12,14 @@ from config.config import Config
 from core.conversation import ConversationManager
 
 console = Console()
+
+# Debug mode - shows more info
+DEBUG = True  # Set to False in production
+
+def debug_print(msg):
+    """Print debug messages"""
+    if DEBUG:
+        console.print(f"[dim yellow]DEBUG:[/dim yellow] {msg}")
 
 def display_welcome():
     """Display welcome message"""

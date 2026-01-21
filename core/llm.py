@@ -28,7 +28,7 @@ class LLMEngine:
         defaults = {
             "groq": "llama3-70b-8192",
             "huggingface": "mistralai/Mistral-7B-Instruct-v0.2",
-            "gemini": "gemini-pro",
+            "gemini": "gemini-2.0-flash",
             "ollama": "llama3",
             "cohere": "command"
         }
@@ -104,10 +104,29 @@ class LLMEngine:
             "max_tokens": 2048
         }
         
-        response = requests.post(self.base_url, json=payload, headers=headers, timeout=30)
-        response.raise_for_status()
+        try:
+            response = requests.post(self.base_url, json=payload, headers=headers, timeout=30)
+            
+            # Better error handling
+            if response.status_code != 200:
+                try:
+                    error_data = response.json()
+                    error_msg = error_data.get('error', {}).get('message', 'Unknown error')
+                except:
+                    error_msg = response.text[:200]
+                
+                return f"Groq API Error ({response.status_code}): {error_msg}"
+            
+            return response.json()["choices"][0]["message"]["content"]
         
-        return response.json()["choices"][0]["message"]["content"]
+        except requests.exceptions.Timeout:
+            return "Error: Request timed out. Check your internet connection."
+        except requests.exceptions.RequestException as e:
+            return f"Network error: {str(e)}"
+        except KeyError as e:
+            return f"Error parsing Groq response: Missing key {str(e)}"
+        except Exception as e:
+            return f"Error: {str(e)}"
     
     def _generate_huggingface(self, messages: List[Dict], system_prompt: str, temperature: float) -> str:
         """Generate using Hugging Face Inference API"""
@@ -136,18 +155,38 @@ class LLMEngine:
             }
         }
         
-        url = f"{self.base_url}/{self.model}"
-        response = requests.post(url, json=payload, headers=headers, timeout=30)
-        response.raise_for_status()
+        try:
+            url = f"{self.base_url}/{self.model}"
+            response = requests.post(url, json=payload, headers=headers, timeout=30)
+            
+            if response.status_code != 200:
+                try:
+                    error_data = response.json()
+                    error_msg = error_data.get('error', 'Unknown error')
+                except:
+                    error_msg = response.text[:200]
+                
+                return f"HuggingFace API Error ({response.status_code}): {error_msg}"
+            
+            result = response.json()
+            if isinstance(result, list):
+                return result[0]["generated_text"]
+            return result["generated_text"]
         
-        result = response.json()
-        if isinstance(result, list):
-            return result[0]["generated_text"]
-        return result["generated_text"]
+        except requests.exceptions.Timeout:
+            return "Error: Request timed out. Check your internet connection."
+        except requests.exceptions.RequestException as e:
+            return f"Network error: {str(e)}"
+        except KeyError as e:
+            return f"Error parsing HuggingFace response: Missing key {str(e)}"
+        except Exception as e:
+            return f"Error: {str(e)}"
     
     def _generate_gemini(self, messages: List[Dict], system_prompt: str, temperature: float) -> str:
         """Generate using Google Gemini API"""
-        url = f"{self.base_url}/{self.model}:generateContent?key={self.api_key}"
+        # Gemini 1.5 models require v1beta
+        version = "v1beta" if "1.5" in self.model else "v1"
+        url = f"https://generativelanguage.googleapis.com/{version}/models/{self.model}:generateContent?key={self.api_key}"
         
         # Format messages for Gemini
         contents = []
@@ -178,10 +217,30 @@ class LLMEngine:
             }
         }
         
-        response = requests.post(url, json=payload, timeout=30)
-        response.raise_for_status()
+        try:
+            response = requests.post(url, json=payload, timeout=30)
+            
+            # Better error handling
+            if response.status_code != 200:
+                try:
+                    error_data = response.json()
+                    error_msg = error_data.get('error', {}).get('message', 'Unknown error')
+                except:
+                    error_msg = response.text[:200]
+                
+                return f"Gemini API Error ({response.status_code}): {error_msg}"
+            
+            data = response.json()
+            return data["candidates"][0]["content"]["parts"][0]["text"]
         
-        return response.json()["candidates"][0]["content"]["parts"][0]["text"]
+        except requests.exceptions.Timeout:
+            return "Error: Request timed out. Check your internet connection."
+        except requests.exceptions.RequestException as e:
+            return f"Network error: {str(e)}"
+        except KeyError as e:
+            return f"Error parsing Gemini response: Missing key {str(e)}"
+        except Exception as e:
+            return f"Error: {str(e)}"
     
     def _generate_ollama(self, messages: List[Dict], system_prompt: str, temperature: float) -> str:
         """Generate using Ollama (local)"""
@@ -200,10 +259,24 @@ class LLMEngine:
             }
         }
         
-        response = requests.post(self.base_url, json=payload, timeout=60)
-        response.raise_for_status()
+        try:
+            response = requests.post(self.base_url, json=payload, timeout=60)
+            
+            if response.status_code != 200:
+                return f"Ollama Error ({response.status_code}): Is Ollama running? Start it with: ollama serve"
+            
+            return response.json()["message"]["content"]
         
-        return response.json()["message"]["content"]
+        except requests.exceptions.ConnectionError:
+            return "Error: Cannot connect to Ollama. Make sure Ollama is running (ollama serve)"
+        except requests.exceptions.Timeout:
+            return "Error: Request timed out. Ollama might be processing a large model."
+        except requests.exceptions.RequestException as e:
+            return f"Network error: {str(e)}"
+        except KeyError as e:
+            return f"Error parsing Ollama response: Missing key {str(e)}"
+        except Exception as e:
+            return f"Error: {str(e)}"
     
     def _generate_cohere(self, messages: List[Dict], system_prompt: str, temperature: float) -> str:
         """Generate using Cohere API"""
@@ -231,10 +304,28 @@ class LLMEngine:
             "temperature": temperature
         }
         
-        response = requests.post(self.base_url, json=payload, headers=headers, timeout=30)
-        response.raise_for_status()
+        try:
+            response = requests.post(self.base_url, json=payload, headers=headers, timeout=30)
+            
+            if response.status_code != 200:
+                try:
+                    error_data = response.json()
+                    error_msg = error_data.get('message', 'Unknown error')
+                except:
+                    error_msg = response.text[:200]
+                
+                return f"Cohere API Error ({response.status_code}): {error_msg}"
+            
+            return response.json()["text"]
         
-        return response.json()["text"]
+        except requests.exceptions.Timeout:
+            return "Error: Request timed out. Check your internet connection."
+        except requests.exceptions.RequestException as e:
+            return f"Network error: {str(e)}"
+        except KeyError as e:
+            return f"Error parsing Cohere response: Missing key {str(e)}"
+        except Exception as e:
+            return f"Error: {str(e)}"
     
     def stream_generate(self, messages: List[Dict], system_prompt: str = None):
         """
@@ -259,20 +350,23 @@ class LLMEngine:
                 "stream": True
             }
             
-            response = requests.post(self.base_url, json=payload, headers=headers, stream=True, timeout=30)
-            
-            for line in response.iter_lines():
-                if line:
-                    line = line.decode('utf-8')
-                    if line.startswith('data: '):
-                        data = line[6:]
-                        if data != '[DONE]':
-                            import json
-                            chunk = json.loads(data)
-                            if 'choices' in chunk and len(chunk['choices']) > 0:
-                                delta = chunk['choices'][0].get('delta', {})
-                                if 'content' in delta:
-                                    yield delta['content']
+            try:
+                response = requests.post(self.base_url, json=payload, headers=headers, stream=True, timeout=30)
+                
+                for line in response.iter_lines():
+                    if line:
+                        line = line.decode('utf-8')
+                        if line.startswith('data: '):
+                            data = line[6:]
+                            if data != '[DONE]':
+                                import json
+                                chunk = json.loads(data)
+                                if 'choices' in chunk and len(chunk['choices']) > 0:
+                                    delta = chunk['choices'][0].get('delta', {})
+                                    if 'content' in delta:
+                                        yield delta['content']
+            except Exception as e:
+                yield f"Streaming error: {str(e)}"
         else:
             # Fallback to regular generation
             response = self.generate(messages, system_prompt)

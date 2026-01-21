@@ -94,9 +94,24 @@ class Config:
     @classmethod
     def get_active_provider(cls):
         """Get which provider is being used"""
-        if cls.DEFAULT_PROVIDER == "ollama":
-            return "ollama"
-        elif cls.GROQ_API_KEY:
+        # Respect DEFAULT_PROVIDER setting first
+        if cls.DEFAULT_PROVIDER:
+            provider = cls.DEFAULT_PROVIDER.lower()
+            
+            # Validate provider has required key
+            if provider == "ollama":
+                return "ollama"
+            elif provider == "groq" and cls.GROQ_API_KEY:
+                return "groq"
+            elif provider == "gemini" and cls.GEMINI_API_KEY:
+                return "gemini"
+            elif provider == "huggingface" and cls.HUGGINGFACE_API_KEY:
+                return "huggingface"
+            elif provider == "cohere" and cls.COHERE_API_KEY:
+                return "cohere"
+        
+        # Fallback: auto-detect first available API
+        if cls.GROQ_API_KEY:
             return "groq"
         elif cls.GEMINI_API_KEY:
             return "gemini"
@@ -108,8 +123,8 @@ class Config:
             return "anthropic"
         elif cls.OPENAI_API_KEY:
             return "openai"
-        else:
-            return None
+        
+        return None
 
 # Validate on import
 Config.validate()

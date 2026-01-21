@@ -1,0 +1,36 @@
+{
+  "$schema": "https://render.com/schema/v1",
+  "services": [
+    {
+      "type": "web",
+      "name": "yui-ai-companion",
+      "env": "python",
+      "region": "oregon",
+      "plan": "free",
+      "buildCommand": "pip install -r requirements.txt && pip install fastapi uvicorn websockets python-multipart",
+      "startCommand": "cd web && uvicorn app:app --host 0.0.0.0 --port $PORT",
+      "envVars": [
+        {
+          "key": "GROQ_API_KEY",
+          "sync": false
+        },
+        {
+          "key": "GEMINI_API_KEY",
+          "sync": false
+        },
+        {
+          "key": "HUGGINGFACE_API_KEY",
+          "sync": false
+        },
+        {
+          "key": "DEFAULT_PROVIDER",
+          "value": "gemini"
+        },
+        {
+          "key": "DEFAULT_PERSONALITY",
+          "value": "yui"
+        }
+      ]
+    }
+  ]
+}

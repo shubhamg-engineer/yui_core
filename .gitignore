@@ -1,15 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
+# Virtual Environment
+venv/
+env/
+ENV/
 .env
 
-config/.env
+# Database and Data
+data/yui_memory.db
+data/chroma_db/
+*.db
+*.sqlite3
+models.txt
 
-__pycache__/
-
-*.pyc
-
-venv/
-
-data/
-
+# Logs
 logs/
+*.log
 
+# VS Code
+.vscode/
+
+# PyTest
+.pytest_cache/
+htmlcov/

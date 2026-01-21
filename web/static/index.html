@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yui 🌙 AI Companion</title>
+    <meta name="description" content="Chat with Yui - An emotionally intelligent AI companion">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🌙</div>
+                    <h1 class="logo-text">Yui</h1>
+                </div>
+                <p class="tagline">Your AI Companion</p>
+            </div>
+
+            <div class="personality-selector">
+                <label>Personality</label>
+                <div class="personality-buttons">
+                    <button class="personality-btn active" data-personality="yui">
+                        <span class="personality-icon">🌙</span>
+                        <span>Yui</span>
+                    </button>
+                    <button class="personality-btn" data-personality="friday">
+                        <span class="personality-icon">💼</span>
+                        <span>Friday</span>
+                    </button>
+                    <button class="personality-btn" data-personality="jarvis">
+                        <span class="personality-icon">🎩</span>
+                        <span>Jarvis</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-section">
+                <h3>Session Stats</h3>
+                <div class="stat">
+                    <span class="stat-label">Messages:</span>
+                    <span class="stat-value" id="messageCount">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Status:</span>
+                    <span class="stat-value" id="connectionStatus">Connecting...</span>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button class="action-btn" id="clearBtn">
+                    <span>🗑️</span> Clear Chat
+                </button>
+                <button class="action-btn" id="infoBtn">
+                    <span>ℹ️</span> Info
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="main-content">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <h2 id="chatTitle">Chat with Yui</h2>
+                    <p id="chatSubtitle">Emotionally intelligent AI companion</p>
+                </div>
+                <div class="header-actions">
+                    <span class="status-indicator" id="statusIndicator">●</span>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <div class="welcome-icon">🌙</div>
+                    <h2>Welcome to Yui!</h2>
+                    <p>I'm here to chat, help, and remember our conversations.</p>
+                    <p class="features">
+                        ✨ <strong>Memory:</strong> I remember our past conversations<br>
+                        💭 <strong>Emotions:</strong> I understand how you feel<br>
+                        🔧 <strong>Tools:</strong> Ask about weather, jokes, facts, and more!
+                    </p>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="typing-indicator" id="typingIndicator">
+                    <span>Yui is thinking</span>
+                    <div class="typing-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+                <form class="chat-input-form" id="chatForm">
+                    <input type="text" id="messageInput" placeholder="Type your message..." autocomplete="off"
+                        disabled />
+                    <button type="submit" id="sendBtn" disabled>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🌙 Welcome to Yui</h2>
+                <p>What should I call you?</p>
+            </div>
+            <form id="loginForm">
+                <input type="text" id="userName" placeholder="Enter your name..." required autocomplete="name" />
+                <button type="submit" class="primary-btn">Start Chatting</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

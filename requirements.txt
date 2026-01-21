@@ -1,0 +1,53 @@
+# Yui AI Companion - Phase 1-4 Requirements
+# Progressive dependencies for core features
+
+# Python version requirement
+# python>=3.10
+
+# ========== PHASE 1: CORE ==========
+# Environment & Configuration
+python-dotenv>=1.0.0
+
+# HTTP Requests
+requests>=2.31.0
+
+# Terminal UI
+rich>=13.7.0
+
+# LLM Providers
+google-generativeai>=0.3.0
+groq>=0.4.0
+cohere>=4.57.0
+
+# Additional dependencies
+typing-extensions>=4.8.0
+
+# ========== PHASE 2: MEMORY ==========
+# Vector Database
+chromadb>=0.4.18
+sentence-transformers>=2.2.2
+
+# Database ORM
+sqlalchemy>=2.0.0
+
+# ========== PHASE 3: EMOTIONS ==========
+# Sentiment Analysis
+textblob>=0.17.1
+vaderSentiment>=3.3.2
+nltk>=3.8.1
+
+# ========== PHASE 4: TOOLS ==========
+# Web Search (FREE - no API key)
+duckduckgo-search>=3.9.0
+
+# Web Scraping
+beautifulsoup4>=4.12.0
+
+# Additional APIs
+pyjokes>=0.6.0
+
+# ========== PHASE 8: WEB UI ==========
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+websockets>=12.0
