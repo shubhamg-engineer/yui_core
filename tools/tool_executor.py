@@ -46,7 +46,7 @@ class ToolExecutor:
             location = match.group(3).strip() if match.group(3) else "auto"
             return ('weather', location)
         
-       # Joke
+        # Joke
         if re.search(self.patterns['joke'], message_lower):
             return ('joke', None)
         
@@ -212,7 +212,7 @@ class ToolExecutor:
         elif intent == 'activity':
             return f"🎯 {result['activity']} ({result['type']})"
         
-       elif intent == 'crypto':
+        elif intent == 'crypto':
             change = result.get('change_24h', 0)
             change_symbol = "📈" if change > 0 else "📉"
             return f"""💰 {result['coin'].title()} Price:
